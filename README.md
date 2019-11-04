@@ -1,2 +1,6 @@
 # commonExtract
-a common extract for html
+
+《VIPS: a Vision-based Page Segmentation Algorithm》
+
+- 
+
