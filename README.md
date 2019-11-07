@@ -1,6 +1,6 @@
 # commonExtract
 
-《VIPS: a Vision-based Page Segmentation Algorithm》
+implement of《VIPS: a Vision-based Page Segmentation Algorithm》
 
 - 
 
