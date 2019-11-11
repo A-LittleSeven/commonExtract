@@ -1,10 +1,8 @@
-# coding:utf-8
+# -*- encoding:utf-8 -*-
 # __author__ = meow
-# meow meow meow~
 
 from lxml import etree
 from lxml.etree import _Comment
-from bs4 import BeautifulSoup
 import re
 import requests
 
@@ -28,40 +26,44 @@ class commonExtractor():
         self.THRES = thres
         self.DUBUG = 1
         # define the ignored tag in html
-        self.igonre = ("header", "footer", "script", "style", "a")
+        self.igonre = ("header", "footer", "script", "style", "a", "form", "nav", "head")
         self.ignoreComment = type(_Comment)
         # definr the text containor tags
-        self.definite = ("p", "article", "h")
-        self.likelihood = self.definite  + ("ul", "table", "h1")
+        self.definite = ("p",)
+        self.likelihood = self.definite  + ("ul", "table")
         self.elemTmpList = []
         self.containor = None
-        
 
+    # 预剪枝
+    def cutUseless(self, elem_tree):
+        for child in elem_tree.getchildren():
+            if child.tag in self.igonre or type(child) == _Comment:
+                child.getparent().remove(child)
+            self.cutUseless(child)
+        return elem_tree
+        
     def ContentSpliter(self, ghtml):
 
         ele_parser = []
-        soup = BeautifulSoup(ghtml, "html.parser")
-        # find the main content of a html
-        mainContent = soup.find("body")
-        # prettify the input html
-        prettydContent = mainContent.prettify(encoding="utf-8")
-        tree = etree.HTML(prettydContent)
+        tree = self.cutUseless(etree.HTML(ghtml))
         # recursively get child element
         self.cutNode(Node(None, tree, 1) ,tree)
-        if self.DUBUG: print(etree.tostring(self.containor.elem))
-
-
+        # if self.DUBUG: print(etree.tostring(self.containor.elem, encoding="utf-8"))
+        Hcontent = str(etree.tostring(self.containor.elem, encoding="utf-8"), encoding="utf-8")
+        reTAG  = r'<[\s\S]*?>|[ \t\r\f\v]'
+        filterdContent = re.sub(reTAG, "", Hcontent)
+        content = "".join(re.findall("\s\S+", filterdContent))
+        if self.DUBUG: print(content)
+        with open("dede.txt", 'w') as f:
+            f.write(Hcontent)
 
     # define the stop rules
     def filter(self, node, child, nlevel):
-        if child.tag in self.igonre: return False
-        if type(child) == _Comment: return False
         if child.tag in self.definite:
             self.findancestor(node)
             # self.elemTmpList.append(Node(node, child, nlevel))
             return False
         else: return True
-
 
     def cutNode(self,  node , elem_tree, nlevel = 2):
         prenode = node
@@ -70,7 +72,7 @@ class commonExtractor():
         for child in elem_tree.getchildren():
             if self.filter(prenode, child, nlevel):
                 node = Node(prenode, child, nlevel)
-                self.elemTmpList.append(node)
+                # self.elemTmpList.append(node)
                 self.cutNode(node, child, nlevel * 2)
             else:
                 continue
@@ -79,7 +81,7 @@ class commonExtractor():
         if self.containor == None:
             self.containor = node.pre
         elif node.pre == self.containor:
-            return
+            return 0
         else:
             self.containor = self.containor.pre
             return self.findancestor(node)
@@ -107,5 +109,6 @@ if __name__ == "__main__":
 
     # print(_Comment)
     t = commonExtractor(debug=1)
-    ghtml = t.readFromUrl("https://www.cnblogs.com/xieqiankun/p/generalnewsextractor.html")
+    # ghtml = t.readFromUrl("https://news.163.com/19/1111/11/ETMTKUBI000189FH.html")
+    ghtml = t.readFromFile("netease.html")
     t.ContentSpliter(ghtml)

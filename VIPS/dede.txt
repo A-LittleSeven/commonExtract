@@ -1,0 +1,10 @@
+<div class="post_next_post_wrap">
+        <div class="post_next_post clearfix">
+            <div class="tip">
+                阅读下一篇
+            </div>
+            <h4/>
+            <p/>
+            </div>
+    </div>
+    
