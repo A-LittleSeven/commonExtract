@@ -1,5 +1,5 @@
 # -*- encoding:utf-8 -*-
-# __author__ = meow
+__author__ = "meow"
 
 from lxml import etree
 from lxml.etree import _Comment
@@ -20,10 +20,9 @@ class Node():
 
 class commonExtractor():
 
-    def __init__(self, mode='definite', thres=1, debug=0):
+    def __init__(self, mode='definite', debug=0):
         
         self.MODE = mode
-        self.THRES = thres
         self.DUBUG = 1
         # define the ignored tag in html
         self.igonre = ("header", "footer", "script", "style", "a", "form", "nav", "head")
@@ -34,7 +33,7 @@ class commonExtractor():
         self.elemTmpList = []
         self.containor = None
 
-    # 预剪枝
+    #  preprocess the dom tree
     def cutUseless(self, elem_tree):
         for child in elem_tree.getchildren():
             if child.tag in self.igonre or type(child) == _Comment:
@@ -109,6 +108,6 @@ if __name__ == "__main__":
 
     # print(_Comment)
     t = commonExtractor(debug=1)
-    # ghtml = t.readFromUrl("https://news.163.com/19/1111/11/ETMTKUBI000189FH.html")
-    ghtml = t.readFromFile("netease.html")
+    ghtml = t.readFromUrl("http://www.eotruck.com/show-7-6848-1.html")
+    # ghtml = t.readFromFile("testsite/docker.html")
     t.ContentSpliter(ghtml)
