@@ -28,7 +28,7 @@ class commonExtractor():
         self.igonre = ("header", "footer", "script", "style", "a", "form", "nav", "head")
         self.ignoreComment = type(_Comment)
         # definr the text containor tags
-        self.definite = ("p",)
+        self.definite = ("p","blockquote")
         self.likelihood = self.definite  + ("ul", "table")
         self.elemTmpList = []
         self.containor = None
@@ -56,8 +56,8 @@ class commonExtractor():
         with open("dede.txt", 'w') as f:
             f.write(Hcontent)
 
-    # define the stop rules
-    def filter(self, node, child, nlevel):
+    # define the search rule
+    def dynamicfind(self, node, child, nlevel):
         if child.tag in self.definite:
             self.findancestor(node)
             # self.elemTmpList.append(Node(node, child, nlevel))
@@ -69,7 +69,7 @@ class commonExtractor():
         if elem_tree == []:
             return
         for child in elem_tree.getchildren():
-            if self.filter(prenode, child, nlevel):
+            if self.dynamicfind(prenode, child, nlevel):
                 node = Node(prenode, child, nlevel)
                 # self.elemTmpList.append(node)
                 self.cutNode(node, child, nlevel * 2)
@@ -82,7 +82,10 @@ class commonExtractor():
         elif node.pre == self.containor:
             return 0
         else:
-            self.containor = self.containor.pre
+            if self.containor.nlevel >= node.nlevel:
+                self.containor = self.containor.pre
+            else:
+                node = node.pre
             return self.findancestor(node)
         
 
@@ -108,6 +111,6 @@ if __name__ == "__main__":
 
     # print(_Comment)
     t = commonExtractor(debug=1)
-    ghtml = t.readFromUrl("http://www.eotruck.com/show-7-6848-1.html")
-    # ghtml = t.readFromFile("testsite/docker.html")
+    # ghtml = t.readFromUrl("https://rpy2.readthedocs.io/en/version_2.8.x/robjects_rpackages.html#importing-arbitrary-r-code-as-a-package")
+    ghtml = t.readFromFile("testDynamic.html")
     t.ContentSpliter(ghtml)
