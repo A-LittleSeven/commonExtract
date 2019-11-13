@@ -2,7 +2,7 @@
 @Alston
 2017-06-07T23:11:35.000000Z
 字数1675
-阅读1193
+阅读1195
 Python编码问题python量化（注：如无特殊说明，本文所指Python均为Python3.5+）
 学习Python的同学们应该都知道，编码问题是编程中遇到最广泛的问题了，尤其是需要处理中文的时候。比如如果去爬一个中文网站，好死不死用了lxml.etree模块，又好死不死用了fromstring来构造节点。那经常就会出问题。举个例子：fromlxmlimportetreetext='&lt;body&lt;p你好&lt;/p&lt;/body'html=etree.fromstring(text)result=etree.tostring(html,pretty_print=True)print(result)print(result.decode('utf-8'))输出为byte型：b'&lt;body\n&lt;p&amp;#20320;&amp;#22909;&lt;/p\n&lt;/body\n'&lt;body&lt;p&amp;#20320;&amp;#22909;&lt;/p&lt;/body可以看到你好变成了乱码&amp;#20320;&amp;#22909;。当然如果了解编码的话就知道这其他不是乱码，而是汉字对应的的utf-8编码后的字节，只不过是用十进制表示的并加上了&amp;#前缀以及;后缀。(这里之所以是utf-8是因为Python3里默认以utf-8编码处理字符串)。
 当然，这里只是举个例子以便引入本篇主题。针对lxml，解决的办法有很多，比如不要用fromstring来构造节点，改用etree.HTML()来构造；或者在使用tostring的时候，加上编码，在输出的时候再decode一下，具体如下：result=etree.tostring(html,encoding="utf-8",...pretty_print=True)print(result.decode('utf-8'))`甚至，你完成可以不用lxml，改用大家都在用的BeautifulSoup甚至是pyquery。这是后话。今天主要还是讲一讲python的编码问题。Python3跟Python2最大的不同在于，Python3中默认使用utf-8作为字符串。所以你可以直接使用print("你好世界")来输出中文，而不需要像Python2一样使用printu"你好世界"来说明编码。

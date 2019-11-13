@@ -24,12 +24,13 @@ class Node():
 
 class commonExtractor():
 
-    def __init__(self, debug=1, image=False, thres=20):
+    def __init__(self, url, debug=1, image=False, thres=20):
         
         self.DUBUG = debug
         self.IMAGE = image
         # TODO: 对标签内文字做阈值处理
         self.THRES = thres
+        self.url = url
         self.definite = ("p", "blockquote")
         self.containor = None
 
@@ -40,10 +41,10 @@ class commonExtractor():
         }
         try:
             res = requests.get(self.url, headers=header)
-            content = res.text
-            return content
+            pagesource = res.text
         except Exception as e:
             print(e)
+        return pagesource
 
     #  preprocess the dom tree
     def processUseless(self, elem_tree):
@@ -60,8 +61,10 @@ class commonExtractor():
         content = reIMG.sub(r'{\1}', content)
         return content
         
-    def ContentSpliter(self, ghtml): 
-        tree = self.processUseless(etree.HTML(ghtml))
+    def ContentSpliter(self):
+        
+        pagesource = self.readUrl()
+        tree = self.processUseless(etree.HTML(pagesource))
         # recursively get child element
         self.cutNode(Node(None, tree, 1) ,tree)
         elemContent = etree.tostring(self.containor.elem, encoding=str)
@@ -115,10 +118,6 @@ class commonExtractor():
 
 
 if __name__ == "__main__":
-    
     # http://www.sohu.com/a/353449767_267106?g=0%253Fcode=a315343389f3a899c29ceaed4215ceb0&spm=smpc.home.top-news1.1.1573626200338DhoZ4ic&_f=index_cpc_0
-    t = commonExtractor(debug=1, image=True)
-    ghtml = t.readFromUrl(
-        "https://www.zybuluo.com/Alston/note/778377")
-    # ghtml = t.readFromFile("testDynamic.html")
-    t.ContentSpliter(ghtml)
+    t = commonExtractor("https://www.zybuluo.com/Alston/note/778377", debug=1, image=True)
+    t.ContentSpliter()
