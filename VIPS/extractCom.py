@@ -79,5 +79,5 @@ class Extractor():
 
 if __name__ == '__main__':
     ext = Extractor(
-        url="https://new.qq.com/omn/20191113/20191113A0DVYY00.html", blockSize=5, image=True)
+        url="https://www.zhihu.com/question/26813241?sort=created", blockSize=5, image=True)
     print(ext.getContext())

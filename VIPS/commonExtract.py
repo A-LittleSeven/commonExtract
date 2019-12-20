@@ -24,7 +24,7 @@ class Node():
 
 class commonExtractor():
 
-    def __init__(self, url, debug=1, image=False, thres=20):
+    def __init__(self, url, debug=0, image=False, thres=20):
         
         self.DUBUG = debug
         self.IMAGE = image
@@ -119,5 +119,6 @@ class commonExtractor():
 
 if __name__ == "__main__":
     # http://www.sohu.com/a/353449767_267106?g=0%253Fcode=a315343389f3a899c29ceaed4215ceb0&spm=smpc.home.top-news1.1.1573626200338DhoZ4ic&_f=index_cpc_0
-    t = commonExtractor("https://www.zybuluo.com/Alston/note/778377", debug=1, image=True)
-    t.ContentSpliter()
+    t = commonExtractor(
+        "https://www.zhihu.com/question/26813241?sort=created", image=True).ContentSpliter()
+    print(t)
